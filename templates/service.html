@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+
+{% block content %}
+   <div class="container">
+        <h2>Add Services</h2>
+        <form action="{{ url_for('addServiceDetails') }}" method="post" class="row g-3">
+            <div class="col-md-12">
+                <div class="col-md-4 mb-3">
+                    <label for="servicetype" class="form-label">Service Type:</label>
+                    <input type="text" class="form-control" name="servicetype">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <input type="text" name="description" class="form-control">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="amount" class="form-label">Amount:</label>
+                    <input type="text" name="amount" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+   <div class="container responsive-table__container">
+       <h2>Service Details</h2>
+       <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Service Type </th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for service in serviceDetails %}
+                    <tr>
+                        <td>{{ service[1] }}</td>
+                        <td>{{ service[2] }}</td>
+                        <td>{{ service[3] }}</td>
+                        <td>
+                            <a href="edit"><i class="bi bi-pencil-fill"></i></a> /
+                            <a href="delete"><i class="bi bi-trash-fill"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+       </table>
+    </div>
+{% endblock %}

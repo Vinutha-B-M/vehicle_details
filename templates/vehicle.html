@@ -1,0 +1,115 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <div class="container">
+  <h2>Add Vehicles</h2>
+  <form action="{{ url_for('addVehicleDetails') }}" method="post" class="row g-3">
+    <div class="col-md-4">
+      <label for="vin" class="form-label">V.I.N:</label>
+      <input type="text" class="form-control" name="vin">
+    </div>
+
+    <div class="col-md-4">
+      <label for="year" class="form-label">Year:</label>
+      <input type="text" name="year" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="make" class="form-label">Make:</label>
+      <input type="text" name="make" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="model" class="form-label">Model:</label>
+      <input type="text" name="model" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="state" class="form-label">State:</label>
+      <input type="text" name="state" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="lic" class="form-label">LIC Plate:</label>
+      <input type="text" name="lic" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="odometer" class="form-label">Odometer:</label>
+      <input type="text" name="odometer" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="gvwr" class="form-label">G.V.W.R:</label>
+      <input type="text" name="gvwr" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="ofcylinder" class="form-label"># Of Cylinder:</label>
+      <input type="text" name="ofcylinder" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="enginegroup" class="form-label">Engine Group:</label>
+      <input type="text" name="enginegroup" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="pcv" class="form-label">PCV:</label>
+      <input type="text" name="pcv" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label for="tailpipe" class="form-label">Tailpipe:</label>
+      <input type="text" name="tailpipe" class="form-control">
+    </div>
+
+    <div class="col-12 text-center">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
+
+    <div class="container responsive-table__container">
+        <div class="d-flex">
+            <h2>Vehicle Details</h2>
+            <a href="/addvehicles" class="btn btn-primary">Add Vehicles</a>
+        </div>
+         <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>VIN</th>
+                    <th>Year</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>State</th>
+                    <th>LIC Plate</th>
+                    <th>Odometer</th>
+                    <th>G.V.W.R</th>
+                    <th># Of Cylinder</th>
+                    <th>Engine Group</th>
+                    <th>PCV</th>
+                    <th>Tailpipe</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for vehicle in vehicleDetails %}
+                    <tr>
+                        <td>{{ vehicle[1] }}</td>
+                        <td>{{ vehicle[2] }}</td>
+                        <td>{{ vehicle[3] }}</td>
+                        <td>{{ vehicle[4] }}</td>
+                        <td>{{ vehicle[5] }}</td>
+                        <td>{{ vehicle[6] }}</td>
+                        <td>{{ vehicle[7] }}</td>
+                        <td>{{ vehicle[8] }}</td>
+                        <td>{{ vehicle[9] }}</td>
+                        <td>{{ vehicle[10] }}</td>
+                        <td>{{ vehicle[11] }}</td>
+                        <td>{{ vehicle[12] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
