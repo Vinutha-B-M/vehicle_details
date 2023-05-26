@@ -42,6 +42,9 @@
                         <button type="submit" class="btn btn-primary">Sign In</button>
                     </div>
                 </form>
+
+                <a href="{{ url_for('reset_password') }}">Forgot Password? Click here</a>
+
 {#                 {% if reset_password_token %}#}
 {#                    <form action="{{ url_for('reset_password', token=reset_password_token) }}" method="post">#}
 {#                        <a href="{{ url_for('reset_password', token=reset_password_token) }}">Forgot Password? Click here</a>#}

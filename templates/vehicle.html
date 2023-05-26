@@ -90,6 +90,7 @@
                     <th>Engine Group</th>
                     <th>PCV</th>
                     <th>Tailpipe</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +108,13 @@
                         <td>{{ vehicle[10] }}</td>
                         <td>{{ vehicle[11] }}</td>
                         <td>{{ vehicle[12] }}</td>
+                        <td>
+                             <form action="/delete_vehicle/{{ vehicle[0] }}" method="POST">
+                                <button type="submit" class="btn btn-link text-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
