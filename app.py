@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request, redirect,
 import mysql.connector
 from flask_mail import Mail,Message
 import redis, jwt, datetime
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+
 
 app = Flask(__name__)
 
@@ -64,17 +64,14 @@ def addUser():
         gender = request.form["gender"]
         password = request.form["password"]
 
-        # Check if the email already exists
         sql_check_email = "SELECT COUNT(*) FROM user_details WHERE email = %s"
         values_check_email = (email,)
         cursor.execute(sql_check_email, values_check_email)
         count_email = cursor.fetchone()[0]
         if count_email > 0:
-            # Email already exists, display an error message
             flash("Email already exists. Please use a different email.")
             return redirect("/signup")
 
-        # Insert the new user into the database
         sql_insert = "INSERT INTO user_details (name, email, phone, gender, password) VALUES (%s, %s, %s, %s, %s)"
         values_insert = (name, email, phone, gender, password)
         cursor.execute(sql_insert, values_insert)
@@ -109,7 +106,7 @@ def signin():
 @app.route("/signout", methods=["GET"])
 def signout():
     response = make_response(redirect(url_for("signin")))
-    response.set_cookie("user_signedin", "", expires=0)  # Clear the cookie by setting an empty value and expiration to the past
+    response.set_cookie("user_signedin", "", expires=0)
     return response
 
 @app.route("/vehicle", methods=["GET", "POST"])
@@ -135,7 +132,7 @@ def addVehicleDetails():
 
     sqlq2 = "SELECT * FROM vehicle_details"
     cursor.execute(sqlq2)
-    vehicle_details = cursor.fetchall()  # Fetch all vehicle records
+    vehicle_details = cursor.fetchall()
     print(vehicle_details)
     return render_template("vehicle.html", vehicleDetails=vehicle_details)
 
@@ -155,22 +152,18 @@ def addServiceDetails():
         description = request.form["description"]
         amount = request.form["amount"]
 
-        # Check if a similar service already exists
         sql_check = "SELECT COUNT(*) FROM service_details WHERE service_type = %s AND description = %s AND amount = %s"
         values_check = (servicetype, description, amount)
         cursor.execute(sql_check, values_check)
         count = cursor.fetchone()[0]
         if count > 0:
-            # Service already exists, do not insert duplicate
             flash("Service already exists!")
         else:
-            # Insert the new service into the database
             sql_insert = "INSERT INTO service_details (service_type, description, amount) VALUES (%s, %s, %s)"
             values_insert = (servicetype, description, amount)
             cursor.execute(sql_insert, values_insert)
             cnx.commit()
 
-    # Fetch all service records
     sql_select = "SELECT * FROM service_details"
     cursor.execute(sql_select)
     service_details = cursor.fetchall()
@@ -214,7 +207,6 @@ def generate_token():
         'exp': expiration_time.timestamp()  # Encode the expiration time as a UNIX timestamp
     }
     token = jwt.encode(payload, app.secret_key, algorithm='HS256')
-    print(token)
     return token
 
 def send_password_reset_email(email, reset_link):
@@ -233,32 +225,19 @@ def reset_password():
     if request.method == "POST":
         email = request.form["email"]
 
-        # Generate a password reset token
         token = generate_token()  # Replace with your token generation logic
-
-        print("decoded token", token)
-        # Store the token in Redis with an expiration time
         redis_key = f"reset_token:{email}"
         redis_client.set(redis_key, token, ex=3600)  # Set the expiration time to 1 hour (3600 seconds)
-
-        # Create the password reset link
         reset_link = url_for('reset_password_token', token=token, _external=True)
-
-        # Send the password reset email
         send_password_reset_email(email, reset_link)
-
-        # Redirect the user to a page indicating that an email has been sent
         return render_template("reset_password_email_sent.html", email=email)
 
     return render_template("reset_password.html")
 
 
 def verify_token(email, token):
-    # Retrieve the token from Redis
     redis_key = f"reset_token:{email}"
     stored_token = redis_client.get(redis_key)
-
-    # Check if the stored token exists and matches the provided token
     if stored_token and stored_token.decode('utf-8') == token:
         return True
 
@@ -270,8 +249,6 @@ def get_email_from_token(token):
         payload = jwt.decode(token, app.secret_key, algorithms=['HS256'])
         email = payload.get('email')
         expiration_time = payload.get('exp')
-
-        # Check if the token has expired
         if expiration_time is not None:
             current_time = datetime.datetime.utcnow()
             if current_time > datetime.datetime.fromtimestamp(expiration_time):
@@ -279,10 +256,8 @@ def get_email_from_token(token):
 
         return email
     except jwt.ExpiredSignatureError:
-        # Handle token expiration error
         raise Exception("Token has expired.")
     except jwt.InvalidTokenError:
-        # Handle invalid token error
         raise Exception("Invalid token.")
 
 
@@ -294,9 +269,8 @@ def update_password(email, new_password):
 
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password_token(token):
-    email = get_email_from_token(token)  # Replace with your logic to extract the email from the token
+    email = get_email_from_token(token)
 
-    # Verify the token and email
     if not verify_token(email, token):
         error_message = "Invalid or expired password reset link."
         return render_template("reset_password_error.html", error_message=error_message)
@@ -306,14 +280,9 @@ def reset_password_token(token):
         confirm_password = request.form["confirm_password"]
 
         if password == confirm_password:
-            # Update the user's password in the database
             update_password(email, password)  # Replace with your logic to update the password
-
-            # Delete the token from Redis
             redis_key = f"reset_token:{email}"
             redis_client.delete(redis_key)
-
-            # Display a success message or redirect the user to a success page
             return render_template("password_reset_success.html")
         else:
             error_message = "Password and Confirm Password do not match"
